@@ -60,10 +60,15 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 */
 
+#import <Availability.h>
+
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#import <UIKit/UIKit.h>			// for UIImage
+#endif
+
 #import <Foundation/Foundation.h> //	for NSObject
 
 #import "ccTypes.h"
-#import "ccMacros.h"
 
 #import "Platforms/CCGL.h" // OpenGL stuff
 #import "Platforms/CCNS.h" // Next-Step stuff
@@ -90,7 +95,7 @@ typedef enum {
 	//! 16-bit textures: RGBA4444
 	kCCTexture2DPixelFormat_RGBA4444,
 	//! 16-bit textures: RGB5A1
-	kCCTexture2DPixelFormat_RGB5A1,
+	kCCTexture2DPixelFormat_RGB5A1,	
 	//! 4-bit PVRTC-compressed texture: PVRTC4
 	kCCTexture2DPixelFormat_PVRTC4,
 	//! 2-bit PVRTC-compressed texture: PVRTC2
@@ -98,15 +103,14 @@ typedef enum {
 
 	//! Default texture format: RGBA8888
 	kCCTexture2DPixelFormat_Default = kCCTexture2DPixelFormat_RGBA8888,
-
+	
 } CCTexture2DPixelFormat;
 
-
-@class CCGLProgram;
+//CLASS INTERFACES:
 
 /** CCTexture2D class.
  * This class allows to easily create OpenGL 2D textures from images, text or raw data.
- * The created CCTexture2D object will always have power-of-two dimensions.
+ * The created CCTexture2D object will always have power-of-two dimensions. 
  * Depending on how you create the CCTexture2D object, the actual image area of the texture might be smaller than the texture dimensions i.e. "contentSize" != (pixelsWide, pixelsHigh) and (maxS, maxT) != (1.0, 1.0).
  * Be aware that the content of the generated textures will be upside-down!
  */
@@ -120,13 +124,10 @@ typedef enum {
 	GLfloat						maxS_,
 								maxT_;
 	BOOL						hasPremultipliedAlpha_;
-
-#ifdef __CC_PLATFORM_IOS
+	
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 	ccResolutionType			resolutionType_;
 #endif
-
-	// needed for drawAtRect, drawInPoint
-	CCGLProgram					*shaderProgram_;
 
 }
 /** Intializes with a texture2d with data */
@@ -156,16 +157,13 @@ typedef enum {
 /** whether or not the texture has their Alpha premultiplied */
 @property(nonatomic,readonly) BOOL hasPremultipliedAlpha;
 
-/** shader program used by drawAtPoint and drawInRect */
-@property(nonatomic,readwrite,retain) CCGLProgram *shaderProgram;
-
-#ifdef __CC_PLATFORM_IOS
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 /** Returns the resolution type of the texture.
  Is it a RetinaDisplay texture, an iPad texture or an standard texture ?
  Only valid on iOS. Not valid on OS X.
-
+ 
  Should be a readonly property. It is readwrite as a hack.
-
+ 
  @since v1.1
  */
 @property (nonatomic, readwrite) ccResolutionType resolutionType;
@@ -193,11 +191,12 @@ Extensions to make it easy to create a CCTexture2D object from an image file.
 Note that RGBA type textures will have their alpha premultiplied - use the blending mode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA).
 */
 @interface CCTexture2D (Image)
-/** Initializes a texture from a CGImage object */
-#ifdef __CC_PLATFORM_IOS
-- (id) initWithCGImage:(CGImageRef)cgImage resolutionType:(ccResolutionType)resolution;
-#elif defined(__CC_PLATFORM_MAC)
-- (id) initWithCGImage:(CGImageRef)cgImage;
+/** Initializes a texture from a UIImage object */
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+- (id) initWithImage:(UIImage *)uiImage resolutionType:(ccResolutionType)resolution;
+- (id) initWithImage:(UIImage *)uiImage DEPRECATED_ATTRIBUTE;
+#elif defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
+- (id) initWithImage:(CGImageRef)cgImage;
 #endif
 @end
 
@@ -212,9 +211,9 @@ Note that the generated textures are of type A8 - use the blending mode (GL_SRC_
 	- Mac: Only NSLineBreakByWordWrapping is supported.
  @since v1.0
  */
-- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions hAlignment:(CCTextAlignment)alignment vAlignment:(CCVerticalTextAlignment) vertAlignment lineBreakMode:(CCLineBreakMode)lineBreakMode fontName:(NSString*)name fontSize:(CGFloat)size;
+- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions alignment:(CCTextAlignment)alignment lineBreakMode:(CCLineBreakMode)lineBreakMode fontName:(NSString*)name fontSize:(CGFloat)size;
 /** Initializes a texture from a string with dimensions, alignment, font name and font size */
-- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions hAlignment:(CCTextAlignment)alignment vAlignment:(CCVerticalTextAlignment) vertAlignment fontName:(NSString*)name fontSize:(CGFloat)size;
+- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions alignment:(CCTextAlignment)alignment fontName:(NSString*)name fontSize:(CGFloat)size;
 /** Initializes a texture from a string with font name and font size */
 - (id) initWithString:(NSString*)string fontName:(NSString*)name fontSize:(CGFloat)size;
 @end
@@ -225,8 +224,17 @@ Note that the generated textures are of type A8 - use the blending mode (GL_SRC_
  Note that the generated textures don't have their alpha premultiplied - use the blending mode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA).
  */
 @interface CCTexture2D (PVRSupport)
+/** Initializes a texture from a PVR Texture Compressed (PVRTC) buffer
+ *
+ * IMPORTANT: This method is only defined on iOS. It is not supported on the Mac version.
+ * 
+ * @deprecated Use initWithPVRFile instead. Will be removed in 2.0
+ */
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+-(id) initWithPVRTCData: (const void*)data level:(int)level bpp:(int)bpp hasAlpha:(BOOL)hasAlpha length:(int)length pixelFormat:(CCTexture2DPixelFormat)pixelFormat;
+#endif // __IPHONE_OS_VERSION_MAX_ALLOWED
 /** Initializes a texture from a PVR file.
-
+ 
  Supported PVR formats:
  - BGRA 8888
  - RGBA 8888
@@ -238,21 +246,21 @@ Note that the generated textures are of type A8 - use the blending mode (GL_SRC_
  - AI 8
  - PVRTC 2BPP
  - PVRTC 4BPP
-
+ 
  By default PVR images are treated as if they alpha channel is NOT premultiplied. You can override this behavior with this class method:
  - PVRImagesHavePremultipliedAlpha:(BOOL)haveAlphaPremultiplied;
-
+ 
  IMPORTANT: This method is only defined on iOS. It is not supported on the Mac version.
-
+ 
  */
 -(id) initWithPVRFile: (NSString*) file;
 
 /** treats (or not) PVR files as if they have alpha premultiplied.
  Since it is impossible to know at runtime if the PVR images have the alpha channel premultiplied, it is
  possible load them as if they have (or not) the alpha channel premultiplied.
-
+ 
  By default it is disabled.
-
+ 
  @since v0.99.5
  */
 +(void) PVRImagesHavePremultipliedAlpha:(BOOL)haveAlphaPremultiplied;
@@ -286,7 +294,7 @@ typedef struct _ccTexParams {
 /** sets alias texture parameters:
   - GL_TEXTURE_MIN_FILTER = GL_NEAREST
   - GL_TEXTURE_MAG_FILTER = GL_NEAREST
-
+ 
  @since v0.8
  */
 - (void) setAliasTexParameters;
@@ -302,21 +310,20 @@ typedef struct _ccTexParams {
 @end
 
 @interface CCTexture2D (PixelFormat)
-/** sets the default pixel format for CGImages that contains alpha channel.
- If the CGImage contains alpha channel, then the options are:
+/** sets the default pixel format for UIImages that contains alpha channel.
+ If the UIImage contains alpha channel, then the options are:
 	- generate 32-bit textures: kCCTexture2DPixelFormat_RGBA8888 (default one)
 	- generate 16-bit textures: kCCTexture2DPixelFormat_RGBA4444
 	- generate 16-bit textures: kCCTexture2DPixelFormat_RGB5A1
-	- generate 24-bit textures: kCCTexture2DPixelFormat_RGB888 (no alpha)
-	- generate 16-bit textures: kCCTexture2DPixelFormat_RGB565 (no alpha)
+	- generate 16-bit textures: kCCTexture2DPixelFormat_RGB565
 	- generate 8-bit textures: kCCTexture2DPixelFormat_A8 (only use it if you use just 1 color)
 
  How does it work ?
    - If the image is an RGBA (with Alpha) then the default pixel format will be used (it can be a 8-bit, 16-bit or 32-bit texture)
-   - If the image is an RGB (without Alpha) then RGB888 (24-bit) or RGB565 texture will be used (16-bit texture) depending on the bpp of the orignal image
-
+   - If the image is an RGB (without Alpha) then an RGB565 texture will be used (16-bit texture)
+ 
  This parameter is not valid for PVR images.
-
+ 
  @since v0.8
  */
 +(void) setDefaultAlphaPixelFormat:(CCTexture2DPixelFormat)format;

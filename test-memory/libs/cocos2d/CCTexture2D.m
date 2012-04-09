@@ -1,7 +1,7 @@
 /*
-
+ 
  ===== IMPORTANT =====
-
+ 
  This is sample code demonstrating API, technology or techniques in development.
  Although this sample code has been reviewed for technical accuracy, it is not
  final. Apple is supplying this information to help you plan for the adoption of
@@ -12,20 +12,20 @@
  technology. For information about updates to this and other developer
  documentation, view the New & Updated sidebars in subsequent documentationd
  seeds.
-
+ 
  =====================
-
+ 
  File: Texture2D.m
  Abstract: Creates OpenGL 2D textures from images or text.
-
+ 
  Version: 1.6
-
+ 
  Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple Inc.
  ("Apple") in consideration of your agreement to the following terms, and your
  use, installation, modification or redistribution of this Apple software
  constitutes acceptance of these terms.  If you do not agree with these terms,
  please do not use, install, modify or redistribute this Apple software.
-
+ 
  In consideration of your agreement to abide by the following terms, and subject
  to these terms, Apple grants you a personal, non-exclusive license, under
  Apple's copyrights in this original Apple software (the "Apple Software"), to
@@ -41,13 +41,13 @@
  including but not limited to any patent rights that may be infringed by your
  derivative works or by other works in which the Apple Software may be
  incorporated.
-
+ 
  The Apple Software is provided by Apple on an "AS IS" basis.  APPLE MAKES NO
  WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
  WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND OPERATION ALONE OR IN
  COMBINATION WITH YOUR PRODUCTS.
-
+ 
  IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -55,9 +55,9 @@
  DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED AND WHETHER UNDER THEORY OF
  CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY OR OTHERWISE, EVEN IF
  APPLE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+ 
  Copyright (C) 2008 Apple Inc. All Rights Reserved.
-
+ 
  */
 
 /*
@@ -69,27 +69,34 @@
  * Added many additions for cocos2d
  */
 
+#import <Availability.h>
+
 #import "Platforms/CCGL.h"
 #import "Platforms/CCNS.h"
+
 
 #import "CCTexture2D.h"
 #import "ccConfig.h"
 #import "ccMacros.h"
 #import "CCConfiguration.h"
 #import "CCTexturePVR.h"
-#import "CCGLProgram.h"
-#import "ccGLStateCache.h"
-#import "CCShaderCache.h"
-#import "CCDirector.h"
-
 #import "Support/ccUtils.h"
 #import "Support/CCFileUtils.h"
 
 
-#if CC_USE_LA88_LABELS
-#define LABEL_PIXEL_FORMAT kCCTexture2DPixelFormat_AI88
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && CC_FONT_LABEL_SUPPORT
+// FontLabel support
+#import "FontManager.h"
+#import "FontLabelStringDrawing.h"
+#endif// CC_FONT_LABEL_SUPPORT
+
+
+// For Labels use 16-bit textures on iPhone 3GS / iPads since A8 textures are very slow
+#if (defined(__ARM_NEON__) || TARGET_IPHONE_SIMULATOR) && CC_USE_LA88_LABELS_ON_NEON_ARCH
+#define USE_TEXT_WITH_A8_TEXTURES 0
+
 #else
-#define LABEL_PIXEL_FORMAT kCCTexture2DPixelFormat_A8
+#define USE_TEXT_WITH_A8_TEXTURES 1
 #endif
 
 //CLASS IMPLEMENTATIONS:
@@ -106,9 +113,8 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 
 @synthesize contentSizeInPixels = size_, pixelFormat = format_, pixelsWide = width_, pixelsHigh = height_, name = name_, maxS = maxS_, maxT = maxT_;
 @synthesize hasPremultipliedAlpha = hasPremultipliedAlpha_;
-@synthesize shaderProgram = shaderProgram_;
 
-#ifdef __CC_PLATFORM_IOS
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 @synthesize resolutionType = resolutionType_;
 #endif
 
@@ -118,12 +124,12 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 	if((self = [super init])) {
 		glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 		glGenTextures(1, &name_);
-		ccGLBindTexture2D( name_ );
-
+		glBindTexture(GL_TEXTURE_2D, name_);
+        
 		[self setAntiAliasTexParameters];
-
+		
 		// Specify OpenGL texture image
-
+		
 		switch(pixelFormat)
 		{
 			case kCCTexture2DPixelFormat_RGBA8888:
@@ -138,9 +144,6 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 			case kCCTexture2DPixelFormat_RGB565:
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei) width, (GLsizei) height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data);
 				break;
-			case kCCTexture2DPixelFormat_RGB888:
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei) width, (GLsizei) height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-				break;
 			case kCCTexture2DPixelFormat_AI88:
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, (GLsizei) width, (GLsizei) height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
 				break;
@@ -149,22 +152,21 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 				break;
 			default:
 				[NSException raise:NSInternalInconsistencyException format:@""];
-
+				
 		}
-
+        
 		size_ = size;
 		width_ = width;
 		height_ = height;
 		format_ = pixelFormat;
 		maxS_ = size.width / (float)width;
 		maxT_ = size.height / (float)height;
-
+        
 		hasPremultipliedAlpha_ = NO;
-
-#ifdef __CC_PLATFORM_IOS
+        
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 		resolutionType_ = kCCResolutionUnknown;
 #endif
-		self.shaderProgram = [[CCShaderCache sharedShaderCache] programForKey:kCCShader_PositionTexture];
 	}
 	return self;
 }
@@ -184,12 +186,9 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 - (void) dealloc
 {
 	CCLOGINFO(@"cocos2d: deallocing %@", self);
-
-	[shaderProgram_ release];
-
-	if( name_ )
-		ccGLDeleteTexture( name_ );
-
+	if(name_)
+		glDeleteTextures(1, &name_);
+	
 	[super dealloc];
 }
 
@@ -203,7 +202,7 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 	CGSize ret;
 	ret.width = size_.width / CC_CONTENT_SCALE_FACTOR();
 	ret.height = size_.height / CC_CONTENT_SCALE_FACTOR();
-
+	
 	return ret;
 }
 
@@ -213,16 +212,24 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 #pragma mark CCTexture2D - Image
 
 @implementation CCTexture2D (Image)
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+// XXX deprecated. To be removed in 2.0
+- (id) initWithImage:(UIImage *)uiImage
+{
+	return [self initWithImage:uiImage resolutionType:kCCResolutionUnknown];
+}
+#endif
 
-#ifdef __CC_PLATFORM_IOS
-- (id) initWithCGImage:(CGImageRef)cgImage resolutionType:(ccResolutionType)resolution
-#elif defined(__CC_PLATFORM_MAC)
-- (id) initWithCGImage:(CGImageRef)cgImage
+
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+- (id) initWithImage:(UIImage *)uiImage resolutionType:(ccResolutionType)resolution
+#elif defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
+- (id) initWithImage:(CGImageRef)CGImage
 #endif
 {
 	NSUInteger				POTWide, POTHigh;
 	CGContextRef			context = nil;
-	void*					data = nil;
+	void*					data = nil;;
 	CGColorSpaceRef			colorSpace;
 	void*					tempData;
 	unsigned int*			inPixel32;
@@ -231,26 +238,31 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 	CGImageAlphaInfo		info;
 	CGSize					imageSize;
 	CCTexture2DPixelFormat	pixelFormat;
-
-	if(cgImage == NULL) {
-		CCLOG(@"cocos2d: CCTexture2D. Can't create Texture. cgImage is nil");
+	
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+	CGImageRef	CGImage = uiImage.CGImage;
+#endif
+	
+	if(CGImage == NULL) {
+		CCLOG(@"cocos2d: CCTexture2D. Can't create Texture. UIImage is nil");
 		[self release];
 		return nil;
 	}
-
+	
 	CCConfiguration *conf = [CCConfiguration sharedConfiguration];
-
+    
+#if CC_TEXTURE_NPOT_SUPPORT
 	if( [conf supportsNPOT] ) {
-		POTWide = CGImageGetWidth(cgImage);
-		POTHigh = CGImageGetHeight(cgImage);
-
-	}
-	else
+		POTWide = CGImageGetWidth(CGImage);
+		POTHigh = CGImageGetHeight(CGImage);
+        
+	} else 
+#endif
 	{
-		POTWide = ccNextPOT(CGImageGetWidth(cgImage));
-		POTHigh = ccNextPOT(CGImageGetHeight(cgImage));
+		POTWide = ccNextPOT(CGImageGetWidth(CGImage));
+		POTHigh = ccNextPOT(CGImageGetHeight(CGImage));
 	}
-
+    
 	NSUInteger maxTextureSize = [conf maxTextureSize];
 	if( POTHigh > maxTextureSize || POTWide > maxTextureSize ) {
 		CCLOG(@"cocos2d: WARNING: Image (%lu x %lu) is bigger than the supported %ld x %ld",
@@ -259,69 +271,65 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 		[self release];
 		return nil;
 	}
-
-	info = CGImageGetAlphaInfo(cgImage);
+	
+	info = CGImageGetAlphaInfo(CGImage);
 	hasAlpha = ((info == kCGImageAlphaPremultipliedLast) || (info == kCGImageAlphaPremultipliedFirst) || (info == kCGImageAlphaLast) || (info == kCGImageAlphaFirst) ? YES : NO);
-
-	size_t bpp = CGImageGetBitsPerComponent(cgImage);
-	colorSpace = CGImageGetColorSpace(cgImage);
-
+	
+	size_t bpp = CGImageGetBitsPerComponent(CGImage);
+	colorSpace = CGImageGetColorSpace(CGImage);
+    
 	if(colorSpace) {
-		if( hasAlpha ) {
+		if(hasAlpha || bpp >= 8)
 			pixelFormat = defaultAlphaPixelFormat_;
-			info = kCGImageAlphaPremultipliedLast;
-		}
-		else
-		{
-			info = kCGImageAlphaNoneSkipLast;
-
-			if( bpp >= 8 )
-				pixelFormat = kCCTexture2DPixelFormat_RGB888;
-			else
-				pixelFormat = kCCTexture2DPixelFormat_RGB565;
-			
-			CCLOG(@"cocos2d: CCTexture2D: Using %@ texture since image has no alpha", (bpp>=8) ? @"RGB888" : @"RGB565" );
-				
+		else {
+			CCLOG(@"cocos2d: CCTexture2D: Using RGB565 texture since image has no alpha");
+			pixelFormat = kCCTexture2DPixelFormat_RGB565;
 		}
 	} else {
 		// NOTE: No colorspace means a mask image
 		CCLOG(@"cocos2d: CCTexture2D: Using A8 texture since image is a mask");
 		pixelFormat = kCCTexture2DPixelFormat_A8;
 	}
-
-	imageSize = CGSizeMake(CGImageGetWidth(cgImage), CGImageGetHeight(cgImage));
-
+	
+	imageSize = CGSizeMake(CGImageGetWidth(CGImage), CGImageGetHeight(CGImage));
+    
 	// Create the bitmap graphics context
-
-	switch(pixelFormat) {
+	
+	switch(pixelFormat) {          
 		case kCCTexture2DPixelFormat_RGBA8888:
 		case kCCTexture2DPixelFormat_RGBA4444:
 		case kCCTexture2DPixelFormat_RGB5A1:
-		case kCCTexture2DPixelFormat_RGB565:
-		case kCCTexture2DPixelFormat_RGB888:
 			colorSpace = CGColorSpaceCreateDeviceRGB();
 			data = malloc(POTHigh * POTWide * 4);
-//			info = hasAlpha ? kCGImageAlphaPremultipliedLast : kCGImageAlphaNoneSkipLast;
-//			info = kCGImageAlphaPremultipliedLast;  // issue #886. This patch breaks BMP images.
+			info = hasAlpha ? kCGImageAlphaPremultipliedLast : kCGImageAlphaNoneSkipLast; 
+            //			info = kCGImageAlphaPremultipliedLast;  // issue #886. This patch breaks BMP images.
+			context = CGBitmapContextCreate(data, POTWide, POTHigh, 8, 4 * POTWide, colorSpace, info | kCGBitmapByteOrder32Big);				
+			CGColorSpaceRelease(colorSpace);
+			break;
+            
+		case kCCTexture2DPixelFormat_RGB565:
+			colorSpace = CGColorSpaceCreateDeviceRGB();
+			data = malloc(POTHigh * POTWide * 4);
+			info = kCGImageAlphaNoneSkipLast;
 			context = CGBitmapContextCreate(data, POTWide, POTHigh, 8, 4 * POTWide, colorSpace, info | kCGBitmapByteOrder32Big);
 			CGColorSpaceRelease(colorSpace);
 			break;
 		case kCCTexture2DPixelFormat_A8:
 			data = malloc(POTHigh * POTWide);
-			info = kCGImageAlphaOnly;
+			info = kCGImageAlphaOnly; 
 			context = CGBitmapContextCreate(data, POTWide, POTHigh, 8, POTWide, NULL, info);
-			break;
+			break;                    
 		default:
 			[NSException raise:NSInternalInconsistencyException format:@"Invalid pixel format"];
 	}
-
-
+	
+	
 	CGContextClearRect(context, CGRectMake(0, 0, POTWide, POTHigh));
 	CGContextTranslateCTM(context, 0, POTHigh - imageSize.height);
-	CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage)), cgImage);
-
+	CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(CGImage), CGImageGetHeight(CGImage)), CGImage);
+	
 	// Repack the pixel data into the right format
-
+	
 	if(pixelFormat == kCCTexture2DPixelFormat_RGB565) {
 		//Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRGGGGGGBBBBB"
 		tempData = malloc(POTHigh * POTWide * 2);
@@ -331,41 +339,24 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 			*outPixel16++ = ((((*inPixel32 >> 0) & 0xFF) >> 3) << 11) | ((((*inPixel32 >> 8) & 0xFF) >> 2) << 5) | ((((*inPixel32 >> 16) & 0xFF) >> 3) << 0);
 		free(data);
 		data = tempData;
-
-	}
-
-	else if(pixelFormat == kCCTexture2DPixelFormat_RGB888) {
-		//Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRRRRGGGGGGGGBBBBBBB"
-		tempData = malloc(POTHigh * POTWide * 3);
-		char *inData = (char*)data;
-		char *outData = (char*)tempData;
-		int j=0;
-		for(unsigned int i = 0; i < POTWide * POTHigh *4; i++) {
-			outData[j++] = inData[i++];
-			outData[j++] = inData[i++];
-			outData[j++] = inData[i++];
-		}
-		free(data);
-		data = tempData;
 		
 	}
-
 	else if (pixelFormat == kCCTexture2DPixelFormat_RGBA4444) {
 		//Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
 		tempData = malloc(POTHigh * POTWide * 2);
 		inPixel32 = (unsigned int*)data;
 		outPixel16 = (unsigned short*)tempData;
 		for(unsigned int i = 0; i < POTWide * POTHigh; ++i, ++inPixel32)
-			*outPixel16++ =
+			*outPixel16++ = 
 			((((*inPixel32 >> 0) & 0xFF) >> 4) << 12) | // R
 			((((*inPixel32 >> 8) & 0xFF) >> 4) << 8) | // G
 			((((*inPixel32 >> 16) & 0xFF) >> 4) << 4) | // B
 			((((*inPixel32 >> 24) & 0xFF) >> 4) << 0); // A
-
-
+		
+		
 		free(data);
 		data = tempData;
-
+		
 	}
 	else if (pixelFormat == kCCTexture2DPixelFormat_RGB5A1) {
 		//Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRGGGGGBBBBBA"
@@ -373,28 +364,28 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 		inPixel32 = (unsigned int*)data;
 		outPixel16 = (unsigned short*)tempData;
 		for(unsigned int i = 0; i < POTWide * POTHigh; ++i, ++inPixel32)
-			*outPixel16++ =
+			*outPixel16++ = 
 			((((*inPixel32 >> 0) & 0xFF) >> 3) << 11) | // R
 			((((*inPixel32 >> 8) & 0xFF) >> 3) << 6) | // G
 			((((*inPixel32 >> 16) & 0xFF) >> 3) << 1) | // B
 			((((*inPixel32 >> 24) & 0xFF) >> 7) << 0); // A
-
-
+		
+		
 		free(data);
 		data = tempData;
 	}
 	self = [self initWithData:data pixelFormat:pixelFormat pixelsWide:POTWide pixelsHigh:POTHigh contentSize:imageSize];
-
+	
 	// should be after calling super init
 	hasPremultipliedAlpha_ = (info == kCGImageAlphaPremultipliedLast || info == kCGImageAlphaPremultipliedFirst);
-
+	
 	CGContextRelease(context);
 	[self releaseData:data];
-
-#ifdef __CC_PLATFORM_IOS
+	
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 	resolutionType_ = resolution;
 #endif
-
+	
 	return self;
 }
 @end
@@ -404,240 +395,211 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 
 @implementation CCTexture2D (Text)
 
-#ifdef __CC_PLATFORM_IOS
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 
-- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions hAlignment:(CCTextAlignment)alignment vAlignment:(CCVerticalTextAlignment) vertAlignment lineBreakMode:(CCLineBreakMode)lineBreakMode font:(id)uifont
+- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions alignment:(CCTextAlignment)alignment lineBreakMode:(CCLineBreakMode)lineBreakMode font:(id)uifont
 {
 	NSAssert( uifont, @"Invalid font");
-
+	
 	NSUInteger POTWide = ccNextPOT(dimensions.width);
 	NSUInteger POTHigh = ccNextPOT(dimensions.height);
 	unsigned char*			data;
-
+	
 	CGContextRef			context;
 	CGColorSpaceRef			colorSpace;
-
-#if CC_USE_LA88_LABELS
-	data = calloc(POTHigh, POTWide * 2);
-#else
+    
+#if USE_TEXT_WITH_A8_TEXTURES
 	data = calloc(POTHigh, POTWide);
+#else
+	data = calloc(POTHigh, POTWide * 2);
 #endif
-
+    
 	colorSpace = CGColorSpaceCreateDeviceGray();
 	context = CGBitmapContextCreate(data, POTWide, POTHigh, 8, POTWide, colorSpace, kCGImageAlphaNone);
 	CGColorSpaceRelease(colorSpace);
-
+	
 	if( ! context ) {
 		free(data);
 		[self release];
 		return nil;
 	}
-
+	
 	CGContextSetGrayFillColor(context, 1.0f, 1.0f);
 	CGContextTranslateCTM(context, 0.0f, POTHigh);
 	CGContextScaleCTM(context, 1.0f, -1.0f); //NOTE: NSString draws in UIKit referential i.e. renders upside-down compared to CGBitmapContext referential
-
+	
 	UIGraphicsPushContext(context);
-
-    CGRect drawArea;
-    if(vertAlignment == CCVerticalTextAlignmentTop)
-    {
-        drawArea = CGRectMake(0, 0, dimensions.width, dimensions.height);
-    }
-    else
-    {
-        CGSize drawSize = [string sizeWithFont:uifont constrainedToSize:dimensions lineBreakMode:lineBreakMode];
-        
-        if(vertAlignment == CCVerticalTextAlignmentBottom)
-        {
-            drawArea = CGRectMake(0, dimensions.height - drawSize.height, dimensions.width, drawSize.height);
-        }
-        else // kCCVerticalTextAlignmentMiddle
-        {
-            drawArea = CGRectMake(0, (dimensions.height - drawSize.height) / 2, dimensions.width, drawSize.height);
-        }
-    }
-
+    
 	// normal fonts
 	if( [uifont isKindOfClass:[UIFont class] ] )
-		[string drawInRect:drawArea withFont:uifont lineBreakMode:lineBreakMode alignment:alignment];
-
+		[string drawInRect:CGRectMake(0, 0, dimensions.width, dimensions.height) withFont:uifont lineBreakMode:lineBreakMode alignment:alignment];
+	
+#if CC_FONT_LABEL_SUPPORT
+	else // ZFont class 
+		[string drawInRect:CGRectMake(0, 0, dimensions.width, dimensions.height) withZFont:uifont lineBreakMode:lineBreakMode alignment:alignment];
+#endif
+	
 	UIGraphicsPopContext();
-
-#if CC_USE_LA88_LABELS
+	
+#if USE_TEXT_WITH_A8_TEXTURES
+	self = [self initWithData:data pixelFormat:kCCTexture2DPixelFormat_A8 pixelsWide:POTWide pixelsHigh:POTHigh contentSize:dimensions];
+    
+#else // ! USE_TEXT_WITH_A8_TEXTURES
 	NSUInteger textureSize = POTWide*POTHigh;
 	unsigned short *la88_data = (unsigned short*)data;
 	for(int i = textureSize-1; i>=0; i--) //Convert A8 to AI88
 		la88_data[i] = (data[i] << 8) | 0xff;
-
-#endif
-
-	self = [self initWithData:data pixelFormat:LABEL_PIXEL_FORMAT pixelsWide:POTWide pixelsHigh:POTHigh contentSize:dimensions];
-
+	
+	self = [self initWithData:data pixelFormat:kCCTexture2DPixelFormat_AI88 pixelsWide:POTWide pixelsHigh:POTHigh contentSize:dimensions];
+#endif // ! USE_TEXT_WITH_A8_TEXTURES
+    
 	CGContextRelease(context);
 	[self releaseData:data];
-
+    
 	return self;
 }
 
 
 
-#elif defined(__CC_PLATFORM_MAC)
+#elif defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
 
-- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions hAlignment:(CCTextAlignment)alignment vAlignment:(CCVerticalTextAlignment) vertAlignment attributedString:(NSAttributedString*)stringWithAttributes
+- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions alignment:(CCTextAlignment)alignment attributedString:(NSAttributedString*)stringWithAttributes
 {
 	NSAssert(stringWithAttributes, @"Invalid stringWithAttributes");
-
+    
     // get nearest power of two
     NSSize POTSize = NSMakeSize(ccNextPOT(dimensions.width), ccNextPOT(dimensions.height));
-    
-	// Get actual rendered dimensions
-    NSRect boundingRect = [stringWithAttributes boundingRectWithSize:NSSizeFromCGSize(dimensions) options:NSStringDrawingUsesLineFragmentOrigin];
-    
+	
+    // get string dimensions
+	NSSize realDimensions = [stringWithAttributes size];
+	
 	// Mac crashes if the width or height is 0
-	if( boundingRect.size.width > 0 && boundingRect.size.height > 0 ) {
-        
-        CGSize offset = CGSizeMake(0, POTSize.height - dimensions.height);
-        
-        //Alignment
-		switch (alignment) {
-			case CCTextAlignmentLeft: break;
-			case CCTextAlignmentCenter: offset.width = (dimensions.width-boundingRect.size.width)/2.0f; break;
-			case CCTextAlignmentRight: offset.width = dimensions.width-boundingRect.size.width; break;
-			default: break;
-		}
-		switch (vertAlignment) {
-			case CCVerticalTextAlignmentTop: offset.height += dimensions.height - boundingRect.size.height; break;
-			case CCVerticalTextAlignmentMiddle: offset.height += (dimensions.height - boundingRect.size.height) / 2; break;
-			case CCVerticalTextAlignmentBottom: break;
-			default: break;
-		}
-        
-        CGRect drawArea = CGRectMake(offset.width, offset.height, boundingRect.size.width, boundingRect.size.height);
-		
-		//Disable antialias
+	if (realDimensions.width > 0 && realDimensions.height > 0)
+    {
+		// Disable antialias
 		[[NSGraphicsContext currentContext] setShouldAntialias:NO];	
 		
-		NSImage *image = [[NSImage alloc] initWithSize:POTSize];
+        NSImage *image = [[NSImage alloc] initWithSize:POTSize];
 		[image lockFocus];	
+
+        [stringWithAttributes drawInRect:NSMakeRect(0, POTSize.height - dimensions.height, dimensions.width, dimensions.height)]; //POTSize.width, POTSize.height)];
 		
-        [stringWithAttributes drawWithRect:NSRectFromCGRect(drawArea) options:NSStringDrawingUsesLineFragmentOrigin];
-		
-		NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect (0.0f, 0.0f, POTSize.width, POTSize.height)];
+        NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0.0f, 0.0f, POTSize.width, POTSize.height)];
 		[image unlockFocus];
-
-		unsigned char *data = (unsigned char*) [bitmap bitmapData];  //Use the same buffer to improve the performance.
-
-		NSUInteger textureSize = POTSize.width * POTSize.height;
-#if CC_USE_LA88_LABELS
-		unsigned short *dst = (unsigned short*)data;
-		for(int i = 0; i<textureSize; i++)
-			dst[i] = (data[i*4+3] << 8) | 0xff;		//Convert RGBA8888 to LA88
-#else
-		unsigned char *dst = (unsigned char*)data;
-		for(int i = 0; i<textureSize; i++)
-			dst[i] = data[i*4+3];					//Convert RGBA8888 to A8
-#endif // ! CC_USE_LA88_LABELS
-
-		data = [self keepData:dst length:textureSize];
-
-		self = [self initWithData:data pixelFormat:LABEL_PIXEL_FORMAT pixelsWide:POTSize.width pixelsHigh:POTSize.height contentSize:dimensions];
+        
+		unsigned char *data = (unsigned char *) [bitmap bitmapData];  // Use the same buffer to improve the performance.
+		
+        NSUInteger textureSize = (NSUInteger)POTSize.width * (NSUInteger)POTSize.height;
+        
+		for (int i = 0; i < textureSize; i++) //Convert RGBA8888 to A8
+			data[i] = data[i * 4 + 3];
+		
+        self = [self initWithData:data pixelFormat:kCCTexture2DPixelFormat_A8 pixelsWide:POTSize.width pixelsHigh:POTSize.height contentSize:dimensions];
+		
 		[bitmap release];
-		[image release];
+		[image release]; 
 	}
     else
     {
 		[self release];
 		return nil;
 	}
-
+	
 	return self;
 }
-#endif // __CC_PLATFORM_MAC
+#endif // __MAC_OS_X_VERSION_MAX_ALLOWED
 
 - (id) initWithString:(NSString*)string fontName:(NSString*)name fontSize:(CGFloat)size
 {
     CGSize dim;
-
-#ifdef __CC_PLATFORM_IOS
+    
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 	id font;
 	font = [UIFont fontWithName:name size:size];
 	if( font )
 		dim = [string sizeWithFont:font];
-
+    
+#if CC_FONT_LABEL_SUPPORT
+	if( ! font ){
+		font = [[FontManager sharedManager] zFontWithName:name pointSize:size];
+		if (font)
+			dim = [string sizeWithZFont:font];
+	}
+#endif // CC_FONT_LABEL_SUPPORT
+	
 	if( ! font ) {
 		CCLOG(@"cocos2d: Unable to load font %@", name);
 		[self release];
 		return nil;
 	}
-
-	return [self initWithString:string dimensions:dim hAlignment:CCTextAlignmentCenter vAlignment:CCVerticalTextAlignmentTop lineBreakMode:CCLineBreakModeWordWrap font:font];
-
-#elif defined(__CC_PLATFORM_MAC)
+	
+	return [self initWithString:string dimensions:dim alignment:CCTextAlignmentCenter lineBreakMode:UILineBreakModeWordWrap font:font];
+	
+#elif defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
 	{
-        NSFont* font = [NSFont fontWithName:name size:size];
-        if( ! font ) {
-            CCLOG(@"cocos2d: Unable to load font %@", name);
-            [self release];
-            return nil;
-        }
-
-		NSDictionary *dict = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-
+        
+		NSFont *font = [[NSFontManager sharedFontManager]
+                        fontWithFamily:name
+                        traits:NSUnboldFontMask | NSUnitalicFontMask
+                        weight:0
+                        size:size];
+        
+		NSDictionary *dict = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];	
+        
 		NSAttributedString *stringWithAttributes = [[[NSAttributedString alloc] initWithString:string attributes:dict] autorelease];
-
+        
 		dim = NSSizeToCGSize( [stringWithAttributes size] );
-
-		return [self initWithString:string dimensions:dim hAlignment:CCTextAlignmentCenter vAlignment:CCVerticalTextAlignmentTop attributedString:stringWithAttributes];
+        
+		return [self initWithString:string dimensions:dim alignment:CCTextAlignmentCenter attributedString:stringWithAttributes];
 	}
-#endif // __CC_PLATFORM_MAC
-
+#endif // __MAC_OS_X_VERSION_MAX_ALLOWED
+    
 }
 
-- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions hAlignment:(CCTextAlignment)alignment vAlignment:(CCVerticalTextAlignment) vertAlignment fontName:(NSString*)name fontSize:(CGFloat)size
+- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions alignment:(CCTextAlignment)alignment fontName:(NSString*)name fontSize:(CGFloat)size
 {
-	return [self initWithString:string dimensions:dimensions hAlignment:alignment vAlignment:vertAlignment lineBreakMode:CCLineBreakModeWordWrap fontName:name fontSize:size];
+	return [self initWithString:string dimensions:dimensions alignment:alignment lineBreakMode:CCLineBreakModeWordWrap fontName:name fontSize:size];
 }
 
-- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions hAlignment:(CCTextAlignment)alignment vAlignment:(CCVerticalTextAlignment) vertAlignment lineBreakMode:(CCLineBreakMode)lineBreakMode fontName:(NSString*)name fontSize:(CGFloat)size
+- (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions alignment:(CCTextAlignment)alignment lineBreakMode:(CCLineBreakMode)lineBreakMode fontName:(NSString*)name fontSize:(CGFloat)size
 {
-#ifdef __CC_PLATFORM_IOS
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 	id						uifont = nil;
-
+	
 	uifont = [UIFont fontWithName:name size:size];
+	
+#if CC_FONT_LABEL_SUPPORT
+	if( ! uifont )
+		uifont = [[FontManager sharedManager] zFontWithName:name pointSize:size];
+#endif // CC_FONT_LABEL_SUPPORT
 	if( ! uifont ) {
 		CCLOG(@"cocos2d: Texture2d: Invalid Font: %@. Verify the .ttf name", name);
 		[self release];
 		return nil;
 	}
-
-	return [self initWithString:string dimensions:dimensions hAlignment:alignment vAlignment:vertAlignment lineBreakMode:lineBreakMode font:uifont];
-
-#elif defined(__CC_PLATFORM_MAC)
+	
+	return [self initWithString:string dimensions:dimensions alignment:alignment lineBreakMode:lineBreakMode font:uifont];
+	
+#elif defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
 
     // select font
-    NSFont *font = [NSFont fontWithName:name size:size];
-    if( ! font ) {
-		CCLOG(@"cocos2d: Texture2d: Invalid Font: %@. Verify the .ttf name", name);
-		[self release];
-		return nil;
-	}
+    NSFont *font = [[NSFontManager sharedFontManager] fontWithFamily:name traits:NSUnboldFontMask | NSUnitalicFontMask weight:0 size:size];
 
     // create paragraph style
     NSMutableParagraphStyle *pstyle = [[NSMutableParagraphStyle alloc] init];
     [pstyle setAlignment:alignment];
     [pstyle setLineBreakMode:lineBreakMode];
-
+    
     // put attributes into a NSDictionary
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, pstyle, NSParagraphStyleAttributeName, nil];
-
+    
     [pstyle release];
-
+    
     // create string with attributes
     NSAttributedString *stringWithAttributes = [[[NSAttributedString alloc] initWithString:string attributes:attributes] autorelease];
-
-	return [self initWithString:string dimensions:dimensions hAlignment:alignment vAlignment:vertAlignment attributedString:stringWithAttributes];
-
+	
+	return [self initWithString:string dimensions:dimensions alignment:alignment attributedString:stringWithAttributes];
+	
 #endif // Mac
 }
 @end
@@ -650,21 +612,62 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 // By default PVR images are treated as if they don't have the alpha channel premultiplied
 static BOOL PVRHaveAlphaPremultiplied_ = NO;
 
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+-(id) initWithPVRTCData: (const void*)data level:(int)level bpp:(int)bpp hasAlpha:(BOOL)hasAlpha length:(int)length pixelFormat:(CCTexture2DPixelFormat)pixelFormat
+{
+	//	GLint					saveName;
+	
+	if( ! [[CCConfiguration sharedConfiguration] supportsPVRTC] ) {
+		CCLOG(@"cocos2d: WARNING: PVRTC images is not supported");
+		[self release];
+		return nil;
+	}
+	
+	if((self = [super init])) {
+		glGenTextures(1, &name_);
+		glBindTexture(GL_TEXTURE_2D, name_);
+		
+		[self setAntiAliasTexParameters];
+		
+		GLenum format;
+		GLsizei size = length * length * bpp / 8;
+		if(hasAlpha)
+			format = (bpp == 4) ? GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG : GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+		else
+			format = (bpp == 4) ? GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG : GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+		
+		if(size < 32)
+			size = 32;
+		
+		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, length, length, 0, size, data);
+		
+		size_ = CGSizeMake(length, length);
+		width_ = length;
+		height_ = length;
+		maxS_ = 1.0f;
+		maxT_ = 1.0f;
+		hasPremultipliedAlpha_ = PVRHaveAlphaPremultiplied_;
+		format_ = pixelFormat;
+	}					
+	return self;
+}
+#endif // __IPHONE_OS_VERSION_MAX_ALLOWED
+
 -(id) initWithPVRFile: (NSString*) relPath
 {
-#ifdef __CC_PLATFORM_IOS
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 	ccResolutionType resolution;
-	NSString *fullpath = [[CCFileUtils sharedFileUtils] fullPathFromRelativePath:relPath resolutionType:&resolution];
-
-#elif defined(__CC_PLATFORM_MAC)
-	NSString *fullpath = [[CCFileUtils sharedFileUtils] fullPathFromRelativePath:relPath];
-#endif
-
+	NSString *fullpath = [CCFileUtils fullPathFromRelativePath:relPath resolutionType:&resolution];
+	
+#elif defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
+	NSString *fullpath = [CCFileUtils fullPathFromRelativePath:relPath];
+#endif 
+	
 	if( (self = [super init]) ) {
 		CCTexturePVR *pvr = [[CCTexturePVR alloc] initWithContentsOfFile:fullpath];
 		if( pvr ) {
 			pvr.retainName = YES;	// don't dealloc texture on release
-
+			
 			name_ = pvr.name;	// texture id
 			maxS_ = 1;			// only POT texture are supported
 			maxT_ = 1;
@@ -673,17 +676,17 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
 			size_ = CGSizeMake(width_, height_);
 			hasPremultipliedAlpha_ = PVRHaveAlphaPremultiplied_;
 			format_ = pvr.format;
-
+			
 			[pvr release];
-
+			
 			[self setAntiAliasTexParameters];
 		} else {
-
+			
 			CCLOG(@"cocos2d: Couldn't load PVR image: %@", relPath);
 			[self release];
 			return nil;
 		}
-#ifdef __CC_PLATFORM_IOS
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 		resolutionType_ = resolution;
 #endif
 	}
@@ -701,7 +704,7 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
 
 @implementation CCTexture2D (Drawing)
 
-- (void) drawAtPoint:(CGPoint)point
+- (void) drawAtPoint:(CGPoint)point 
 {
 	GLfloat		coordinates[] = { 0.0f,	maxT_,
         maxS_,	maxT_,
@@ -709,26 +712,25 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
         maxS_,	0.0f };
 	GLfloat		width = (GLfloat)width_ * maxS_,
     height = (GLfloat)height_ * maxT_;
-
+    
 	GLfloat		vertices[] = {	point.x,			point.y,
         width + point.x,	point.y,
         point.x,			height  + point.y,
 		width + point.x,	height  + point.y };
-
-	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position | kCCVertexAttribFlag_TexCoords );
-	[shaderProgram_ use];
-	[shaderProgram_ setUniformForModelViewProjectionMatrix];
-
-	ccGLBindTexture2D( name_ );
-
-
-	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
-	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, 0, coordinates);
-
-
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	
-	CC_INCREMENT_GL_DRAWS(1);
+	glBindTexture(GL_TEXTURE_2D, name_);
+    
+	// Default GL states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
+	// Needed states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_TEXTURE_COORD_ARRAY
+	// Unneeded states: GL_COLOR_ARRAY
+	glDisableClientState(GL_COLOR_ARRAY);
+    
+	glVertexPointer(2, GL_FLOAT, 0, vertices);
+	glTexCoordPointer(2, GL_FLOAT, 0, coordinates);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+	// Restore GL state
+	glEnableClientState(GL_COLOR_ARRAY);
 }
 
 
@@ -742,22 +744,20 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
         rect.origin.x + rect.size.width,	rect.origin.y,
         rect.origin.x,						rect.origin.y + rect.size.height,
 		rect.origin.x + rect.size.width,						rect.origin.y + rect.size.height };
-
-
-	[shaderProgram_ use];
-	[shaderProgram_ setUniformForModelViewProjectionMatrix];    
-
-	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position | kCCVertexAttribFlag_TexCoords );
-
-	ccGLBindTexture2D( name_ );
-
-	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
-	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, 0, coordinates);
-
-
+	
+	glBindTexture(GL_TEXTURE_2D, name_);
+	
+	// Default GL states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
+	// Needed states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_TEXTURE_COORD_ARRAY
+	// Unneeded states: GL_COLOR_ARRAY
+	glDisableClientState(GL_COLOR_ARRAY);
+	
+	glVertexPointer(2, GL_FLOAT, 0, vertices);
+	glTexCoordPointer(2, GL_FLOAT, 0, coordinates);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	
-	CC_INCREMENT_GL_DRAWS(1);
+	// restore state
+	glEnableClientState(GL_COLOR_ARRAY);
 }
 
 @end
@@ -774,8 +774,8 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
 -(void) generateMipmap
 {
 	NSAssert( width_ == ccNextPOT(width_) && height_ == ccNextPOT(height_), @"Mimpap texture only works in POT textures");
-	ccGLBindTexture2D( name_ );
-	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture( GL_TEXTURE_2D, name_ );
+	ccglGenerateMipmap(GL_TEXTURE_2D);
 }
 
 -(void) setTexParameters: (ccTexParams*) texParams
@@ -783,10 +783,9 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
 	NSAssert( (width_ == ccNextPOT(width_) && height_ == ccNextPOT(height_)) ||
 			 (texParams->wrapS == GL_CLAMP_TO_EDGE && texParams->wrapT == GL_CLAMP_TO_EDGE),
 			 @"GL_CLAMP_TO_EDGE should be used in NPOT textures");
-
-	ccGLBindTexture2D( name_ );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texParams->minFilter );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texParams->magFilter );
+	glBindTexture( GL_TEXTURE_2D, name_ );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texParams->minFilter );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texParams->magFilter );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texParams->wrapS );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texParams->wrapT );
 }
@@ -825,7 +824,7 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
 -(NSUInteger) bitsPerPixelForFormat
 {
 	NSUInteger ret=0;
-
+    
 	switch (format_) {
 		case kCCTexture2DPixelFormat_RGBA8888:
 			ret = 32;

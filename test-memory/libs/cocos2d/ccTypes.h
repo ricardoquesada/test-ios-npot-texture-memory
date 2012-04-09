@@ -3,17 +3,17 @@
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
  * Copyright (c) 2011 Zynga Inc.
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,10 +29,10 @@
  cocos2d (cc) types
 */
 
+#import <Availability.h>
 #import <Foundation/Foundation.h>
-#import "ccMacros.h"
 
-#ifdef __CC_PLATFORM_IOS
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 #import <CoreGraphics/CGGeometry.h>	// CGPoint
 #endif
 
@@ -152,7 +152,7 @@ typedef struct _ccVertex3F
 	GLfloat y;
 	GLfloat z;
 } ccVertex3F;
-
+		
 /** A texcoord composed of 2 floats: u, y
  @since v0.8
  */
@@ -161,7 +161,7 @@ typedef struct _ccTex2F {
 	 GLfloat v;
 } ccTex2F;
 
-
+ 
 //! Point Sprite component
 typedef struct _ccPointSprite
 {
@@ -223,30 +223,6 @@ typedef struct _ccV2F_C4F_T2F
 	//! tex coords (2F)
 	ccTex2F			texCoords;
 } ccV2F_C4F_T2F;
-
-//! a Point with a vertex point, a tex coord point and a color 4F
-typedef struct _ccV3F_C4F_T2F
-{
-	//! vertices (3F)
-	ccVertex3F		vertices;
-	//! colors (4F)
-	ccColor4F		colors;
-	//! tex coords (2F)
-	ccTex2F			texCoords;
-} ccV3F_C4F_T2F;
-
-//! 4 ccV3F_C4F_T2F
-typedef struct _ccV3F_C4F_T2F_Quad
-{
-	//! top left
-	ccV3F_C4F_T2F	tl;
-	//! bottom left
-	ccV3F_C4F_T2F	bl;
-	//! top right
-	ccV3F_C4F_T2F	tr;
-	//! bottom right
-	ccV3F_C4F_T2F	br;
-} ccV3F_C4F_T2F_Quad;
 
 //! a Point with a vertex point, a tex coord point and a color 4B
 typedef struct _ccV3F_C4B_T2F
@@ -314,41 +290,43 @@ typedef struct _ccBlendFunc
 //! ccResolutionType
 typedef enum
 {
-
-	//! Unknonw resolution type
-	kCCResolutionUnknown,
-#ifdef __CC_PLATFORM_IOS
-	//! iPhone resolution type
-	kCCResolutioniPhone,
-	//! RetinaDisplay resolution type
-	kCCResolutioniPhoneRetinaDisplay,
-	//! iPad resolution type
-	kCCResolutioniPad,
-	//! iPad Retina Display resolution type
-	kCCResolutioniPadRetinaDisplay,
-	
-#elif defined(__CC_PLATFORM_MAC)
-	//! Mac resolution type
-	kCCResolutionMac,
-
-	//! Mac RetinaDisplay resolution type (???)
-	kCCResolutionMacRetinaDisplay,
-#endif // platform
-
+    //! Unknonw resolution type
+    kCCResolutionUnknown,
+    //! iPhone resolution type
+    kCCResolutioniPhone,
+    //! RetinaDisplay resolution type
+    kCCResolutioniPhoneRetinaDisplay,
+    //! iPad resolution type
+    kCCResolutioniPad,
+    //! iPad Retina Display resolution type
+    kCCResolutioniPadRetinaDisplay,
+    
 } ccResolutionType;
-
-// XXX: The name shall be ccVerticalTextAligment, but it is using "CC" instead of "cc" in order to be compatible with CCTextAlignment
-//! Vertical text alignment type
-typedef enum
-{
-    CCVerticalTextAlignmentTop,
-    CCVerticalTextAlignmentMiddle,
-    CCVerticalTextAlignmentBottom,
-} CCVerticalTextAlignment;
 
 //! delta time type
 //! if you want more resolution redefine it as a double
 typedef float ccTime;
 //typedef double ccTime;
 
-typedef float ccMat4[16];
+// types for animation in particle systems
+
+// texture coordinates for a quad
+typedef struct _ccT2F_Quad
+{
+	//! bottom left
+	ccTex2F	bl;
+	//! bottom right
+	ccTex2F	br;
+	//! top left
+	ccTex2F	tl;
+	//! top right
+	ccTex2F	tr;
+} ccT2F_Quad;
+
+// struct that holds the size in pixels, texture coordinates and delays for animated CCParticleSystemQuad
+typedef struct
+{
+	ccT2F_Quad texCoords;
+	ccTime delay;
+	CGSize size; 
+} ccAnimationFrameData;

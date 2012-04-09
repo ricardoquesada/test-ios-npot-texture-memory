@@ -1,24 +1,20 @@
 //
 //  AppDelegate.h
-//  test-memory
+//  test-memory2
 //
-//  Created by Ricardo Quesada on 4/4/12.
+//  Created by Ricardo Quesada on 4/9/12.
 //  Copyright __MyCompanyName__ 2012. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-#import "cocos2d.h"
 
-@interface AppController : NSObject <UIApplicationDelegate, CCDirectorDelegate>
-{
-	UIWindow *window_;
-	UINavigationController *navController_;
+@class RootViewController;
 
-	CCDirectorIOS	*director_;							// weak ref
+@interface AppDelegate : NSObject <UIApplicationDelegate> {
+	UIWindow			*window;
+	RootViewController	*viewController;
 }
 
 @property (nonatomic, retain) UIWindow *window;
-@property (readonly) UINavigationController *navController;
-@property (readonly) CCDirectorIOS *director;
 
 @end

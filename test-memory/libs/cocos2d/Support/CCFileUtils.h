@@ -31,92 +31,23 @@
 /** Helper class to handle file operations */
 @interface CCFileUtils : NSObject
 {
-	NSFileManager	*fileManager_;
-	NSBundle		*bundle_;
-	NSMutableDictionary *fullPathCache_;
-	NSMutableDictionary *removeSuffixCache_;
-	
-	
-#ifdef __CC_PLATFORM_IOS
-	BOOL	enableFallbackSuffixes_;
-	
-	NSString *iPhoneRetinaDisplaySuffix_;
-	NSString *iPadSuffix_;
-	NSString *iPadRetinaDisplaySuffix_;
-#endif // __CC_PLATFORM_IOS
 }
 
-/** NSBundle used by CCFileUtils. By default it uses [NSBundle mainBundle].
- @since v2.0
- */
-@property (nonatomic, readwrite, retain) NSBundle	*bundle;
-
-/** NSFileManager used by CCFileUtils. By default it uses its own intance.
- @since v2.0
- */
-@property (nonatomic, readwrite, retain) NSFileManager	*fileManager;
-
-#ifdef __CC_PLATFORM_IOS
-/** The iPhone RetinaDisplay suffixes to load resources.
- By default it is "-hd" and "" in that order.
- Only valid on iOS. Not valid for OS X.
- 
- @since v1.1
- */
-@property (nonatomic,readwrite, copy, setter = setiPhoneRetinaDisplaySuffix:) NSString *iPhoneRetinaDisplaySuffix;
-
-/** The iPad suffixes to load resources.
- By default it is "-ipad", "-hd", "", in that order.
- Only valid on iOS. Not valid for OS X.
- 
- @since v1.1
- */
-@property (nonatomic,readwrite, copy, setter = setiPadSuffix:) NSString *iPadSuffix;
-
-
-/** Sets the iPad Retina Display suffixes to load resources.
- By default it is "-ipadhd", "-ipad", "-hd", "", in that order.
- Only valid on iOS. Not valid for OS X.
- 
- @since v2.0
- */
-@property (nonatomic,readwrite, copy, setter = setiPadRetinaDisplaySuffix:) NSString *iPadRetinaDisplaySuffix;
-
-/** Whether of not the fallback sufixes is enabled.
- When enabled it will try to search for the following suffixes in the following order until one is found:
-   * On iPad HD  : iPad HD suffix, iPad suffix, iPhone HD suffix, Without suffix
-   * On iPad     : iPad suffix, iPhone HD suffix, Without suffix
-   * On iPhone HD: iPhone HD suffix, Without suffix
- 
- By default this functionality is off;
-*/
-@property (nonatomic, readwrite) BOOL enableFallbackSuffixes;
-
- #endif // __CC_PLATFORM_IOS
-
-/** returns the shared file utils instance */
-+(CCFileUtils*) sharedFileUtils;
-
-
-/** Purge cached entries.
- Will be called automatically by the Director when a memory warning is received
- */
--(void) purgeCachedEntries;
-
 /** Returns the fullpath of an filename.
-
- If in iPhoneRetinaDisplay mode, and a RetinaDisplay file is found, it will return that path.
+ 
+ If in RetinaDisplay mode, and a RetinaDisplay file is found, it will return that path.
  If in iPad mode, and an iPad file is found, it will return that path.
-
+ 
  Examples:
-
-  * In iPad mode: "image.png" -> "/full/path/image-ipad.png" (in case the -ipad file exists)
-  * In iPhone RetinaDisplay mode: "image.png" -> "/full/path/image-hd.png" (in case the -hd file exists)
-  * In iPad RetinaDisplay mode: "image.png" -> "/full/path/image-ipadhd.png" (in case the -ipadhd file exists)
-
+ 
+ * In iPad mode: "image.png" -> "/full/path/image-ipad.png" (in case the -ipad file exists)
+ * In RetinaDisplay mode: "image.png" -> "/full/path/image-hd.png" (in case the -hd file exists)
+ 
  */
--(NSString*) fullPathFromRelativePath:(NSString*) relPath;
++(NSString*) fullPathFromRelativePath:(NSString*) relPath;
 
+
+#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 
 /** Returns the fullpath of an filename including the resolution of the image.
  
@@ -126,53 +57,74 @@
  Examples:
  
  * In iPad mode: "image.png" -> "/full/path/image-ipad.png" (in case the -ipad file exists)
- * In iPhone RetinaDisplay mode: "image.png" -> "/full/path/image-hd.png" (in case the -hd file exists)
- * In iPad RetinaDisplay mode: "image.png" -> "/full/path/image-ipadhd.png" (in case the -ipadhd file exists)
+ * In RetinaDisplay mode: "image.png" -> "/full/path/image-hd.png" (in case the -hd file exists)
  
  If an iPad file is found, it will set resolution type to kCCResolutioniPad
  If a RetinaDisplay file is found, it will set resolution type to kCCResolutionRetinaDisplay
  
  */
--(NSString*) fullPathFromRelativePath:(NSString*)relPath resolutionType:(ccResolutionType*)resolutionType;
++(NSString*) fullPathFromRelativePath:(NSString*)relPath resolutionType:(ccResolutionType*)resolutionType;
 
-#ifdef __CC_PLATFORM_IOS
 
 /** removes the suffix from a path
- * On iPhone RetinaDisplay it will remove the -hd suffix
+ * On RetinaDisplay it will remove the -hd suffix
  * On iPad it will remove the -ipad suffix
- * On iPad RetinaDisplay it will remove the -ipadhd suffix
-
+ * On iPhone it will remove the (empty) suffix
  Only valid on iOS. Not valid for OS X.
-
+ 
  @since v0.99.5
  */
--(NSString *)removeSuffixFromFile:(NSString*) path;
++(NSString *)removeSuffixFromFile:(NSString*) path;
 
-/** Returns whether or not a given path exists with the iPhone RetinaDisplay suffix.
- Only available on iOS. Not supported on OS X.
+/** Sets the iPhone RetinaDisplay suffix to load resources.
+ By default it is "-hd".
+ Only valid on iOS. Not valid for OS X.
+ 
  @since v1.1
  */
--(BOOL) iPhoneRetinaDisplayFileExistsAtPath:(NSString*)filename;
++(void) setiPhoneRetinaDisplaySuffix:(NSString*)suffix;
+
+/** Sets the iPad suffix to load resources.
+ By default it is "".
+ Only valid on iOS. Not valid for OS X.
+ 
+
+ */
++(void) setiPadSuffix:(NSString*)suffix;
+
+/** Sets the iPad Retina Display suffix to load resources.
+ By default it is "-ipadhd".
+ Only valid on iOS. Not valid for OS X.
+ 
+ @since v1.1
+ */
++(void) setiPadRetinaDisplaySuffix:(NSString*)suffix;
 
 /** Returns whether or not a given filename exists with the iPad suffix.
  Only available on iOS. Not supported on OS X.
  @since v1.1
  */
--(BOOL) iPadFileExistsAtPath:(NSString*)filename;
++(BOOL) iPadFileExistsAtPath:(NSString*)filename;
 
 /** Returns whether or not a given filename exists with the iPad RetinaDisplay suffix.
  Only available on iOS. Not supported on OS X.
- @since v2.0
+ 
  */
--(BOOL) iPadRetinaDisplayFileExistsAtPath:(NSString*)filename;
++(BOOL) iPadFileExistsAtPath:(NSString*)filename;
 
-#endif // __CC_PLATFORM_IOS
+/** Returns whether or not a given path exists with the iPhone RetinaDisplay suffix.
+ Only available on iOS. Not supported on OS X.
+ @since v1.1
+ */
++(BOOL) iPhoneRetinaDisplayFileExistsAtPath:(NSString*)filename;
+
+#endif // __IPHONE_OS_VERSION_MAX_ALLOWED
 
 @end
 
 /** loads a file into memory.
  the caller should release the allocated buffer.
-
+ 
  @returns the size of the allocated buffer
  @since v0.99.5
  */

@@ -10,10 +10,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,6 +25,7 @@
  */
 
 
+#import "CCBlockSupport.h"
 #import "CCActionInstant.h"
 #import "CCNode.h"
 #import "CCSprite.h"
@@ -39,9 +40,9 @@
 
 -(id) init
 {
-	if( (self=[super init]) )
+	if( (self=[super init]) )	
 		duration_ = 0;
-
+	
 	return self;
 }
 
@@ -63,7 +64,7 @@
 
 -(void) update: (ccTime) t
 {
-	// nothing
+	// ignore
 }
 
 -(CCFiniteTimeAction*) reverse
@@ -78,8 +79,9 @@
 #pragma mark CCShow
 
 @implementation CCShow
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
+	[super startWithTarget:aTarget];
 	((CCNode *)target_).visible = YES;
 }
 
@@ -95,8 +97,9 @@
 #pragma mark CCHide
 
 @implementation CCHide
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
+	[super startWithTarget:aTarget];
 	((CCNode *)target_).visible = NO;
 }
 
@@ -112,8 +115,9 @@
 #pragma mark CCToggleVisibility
 
 @implementation CCToggleVisibility
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
+	[super startWithTarget:aTarget];
 	((CCNode *)target_).visible = !((CCNode *)target_).visible;
 }
 @end
@@ -133,13 +137,14 @@
 {
 	if(( self=[super init]))
 		flipX = x;
-
+	
 	return self;
 }
 
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
-	[(CCSprite*)target_ setFlipX:flipX];
+	[super startWithTarget:aTarget];
+	[(CCSprite*)aTarget setFlipX:flipX];
 }
 
 -(CCFiniteTimeAction*) reverse
@@ -169,13 +174,14 @@
 {
 	if(( self=[super init]))
 		flipY = y;
-
+	
 	return self;
 }
 
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
-	[(CCSprite*)target_ setFlipY:flipY];
+	[super startWithTarget:aTarget];
+	[(CCSprite*)aTarget setFlipY:flipY];
 }
 
 -(CCFiniteTimeAction*) reverse
@@ -206,7 +212,7 @@
 {
 	if( (self=[super init]) )
 		position = pos;
-
+	
 	return self;
 }
 
@@ -216,8 +222,9 @@
 	return copy;
 }
 
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
+	[super startWithTarget:aTarget];
 	((CCNode *)target_).position = position;
 }
 
@@ -269,8 +276,9 @@
 	return copy;
 }
 
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
+	[super startWithTarget:aTarget];
 	[self execute];
 }
 
@@ -351,7 +359,7 @@
 {
 	if( (self=[super initWithTarget:t selector:s] ) )
 		self.object = object;
-
+	
 	return self;
 }
 
@@ -379,6 +387,8 @@
 #pragma mark -
 #pragma mark Blocks
 
+#if NS_BLOCKS_AVAILABLE
+
 #pragma mark CCCallBlock
 
 @implementation CCCallBlock
@@ -392,7 +402,7 @@
 {
 	if ((self = [super init]))
 		block_ = [block copy];
-
+	
 	return self;
 }
 
@@ -402,8 +412,9 @@
 	return copy;
 }
 
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
+	[super startWithTarget:aTarget];
 	[self execute];
 }
 
@@ -433,7 +444,7 @@
 {
 	if ((self = [super init]))
 		block_ = [block copy];
-
+	
 	return self;
 }
 
@@ -443,8 +454,9 @@
 	return copy;
 }
 
--(void) update:(ccTime)time
+-(void) startWithTarget:(id)aTarget
 {
+	[super startWithTarget:aTarget];
 	[self execute];
 }
 
@@ -461,50 +473,5 @@
 
 @end
 
-#pragma mark CCCallBlockO
 
-@implementation CCCallBlockO
-
-@synthesize object=object_;
-
-+(id) actionWithBlock:(void(^)(id object))block object:(id)object
-{
-	return [[[self alloc] initWithBlock:block object:object] autorelease];
-}
-
--(id) initWithBlock:(void(^)(id object))block object:(id)object
-{
-	if ((self = [super init])) {
-		block_ = [block copy];
-		object_ = [object retain];
-	}
-
-	return self;
-}
-
--(id) copyWithZone: (NSZone*) zone
-{
-	CCActionInstant *copy = [[[self class] allocWithZone: zone] initWithBlock:block_];
-	return copy;
-}
-
--(void) update:(ccTime)time
-{
-	[self execute];
-}
-
--(void) execute
-{
-	block_(object_);
-}
-
--(void) dealloc
-{
-	[object_ release];
-	[block_ release];
-
-	[super dealloc];
-}
-
-@end
-
+#endif // NS_BLOCKS_AVAILABLE
