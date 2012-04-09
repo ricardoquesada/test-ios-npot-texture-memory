@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A0610B0E153276CE00076220 /* texture1536x1536_rgba8888.png in Resources */ = {isa = PBXBuildFile; fileRef = A0610B0D153276CE00076220 /* texture1536x1536_rgba8888.png */; };
 		A0BA3962152C6CCD0071F391 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0BA3961152C6CCD0071F391 /* QuartzCore.framework */; };
 		A0BA3964152C6CCD0071F391 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0BA3963152C6CCD0071F391 /* OpenGLES.framework */; };
 		A0BA3966152C6CCD0071F391 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0BA3965152C6CCD0071F391 /* OpenAL.framework */; };
@@ -136,6 +137,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A0610B0D153276CE00076220 /* texture1536x1536_rgba8888.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = texture1536x1536_rgba8888.png; path = Resources/texture1536x1536_rgba8888.png; sourceTree = "<group>"; };
 		A0BA395D152C6CCD0071F391 /* test-memory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "test-memory.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0BA3961152C6CCD0071F391 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A0BA3963152C6CCD0071F391 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -468,6 +470,7 @@
 		A0BA3974152C6CCD0071F391 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A0610B0D153276CE00076220 /* texture1536x1536_rgba8888.png */,
 				A0BA3B19152C6FB10071F391 /* texture2047x2047_rgba8888.pvr */,
 				A0BA3B1A152C6FB10071F391 /* texture2048x2048_rgb888.pvr */,
 				A0BA3B1B152C6FB10071F391 /* texture2048x2048_rgba4444.pvr */,
@@ -894,6 +897,7 @@
 				A0BA3B1E152C6FB10071F391 /* texture2048x2048_rgb888.pvr in Resources */,
 				A0BA3B1F152C6FB10071F391 /* texture2048x2048_rgba4444.pvr in Resources */,
 				A0BA3B20152C6FB10071F391 /* texture2048x2048_rgba8888.pvr in Resources */,
+				A0610B0E153276CE00076220 /* texture1536x1536_rgba8888.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1108,6 +1112,7 @@
 				A0BA3AEE152C6CCF0071F391 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
