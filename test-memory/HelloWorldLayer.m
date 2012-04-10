@@ -47,9 +47,9 @@
 //		CCSprite *sprite = [CCSprite spriteWithFile:@"texture2048x2048_rgba4444.pvr"];
 //		CCSprite *sprite = [CCSprite spriteWithFile:@"texture2048x2048_rgb888.pvr"];
 //		CCSprite *sprite = [CCSprite spriteWithFile:@"texture2047x2047_rgba8888.pvr"];
-//		CCSprite *sprite = [CCSprite spriteWithFile:@"texture2047x2047_rgba8888.png"];
+		CCSprite *sprite = [CCSprite spriteWithFile:@"texture2047x2047_rgba8888.png"];
 //		CCSprite *sprite = [CCSprite spriteWithFile:@"texture1536x1536_rgba8888.png"];
-		CCSprite *sprite = [CCSprite spriteWithFile:@"texture1025x1025_rgba8888.png"];
+//		CCSprite *sprite = [CCSprite spriteWithFile:@"texture1025x1025_rgba8888.png"];
 
 		[sprite setPosition:ccp( s.width/2, s.height/2)];
 		[sprite setScale:0.25f];

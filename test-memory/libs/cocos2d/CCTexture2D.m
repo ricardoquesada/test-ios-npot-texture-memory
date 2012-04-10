@@ -116,11 +116,17 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 - (id) initWithData:(const void*)data pixelFormat:(CCTexture2DPixelFormat)pixelFormat pixelsWide:(NSUInteger)width pixelsHigh:(NSUInteger)height contentSize:(CGSize)size
 {
 	if((self = [super init])) {
-		glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+
+//		glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+//
 		glGenTextures(1, &name_);
 		ccGLBindTexture2D( name_ );
 
-		[self setAntiAliasTexParameters];
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+//		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
 
 		// Specify OpenGL texture image
 
@@ -267,22 +273,25 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 	colorSpace = CGImageGetColorSpace(cgImage);
 
 	if(colorSpace) {
-		if( hasAlpha ) {
-			pixelFormat = defaultAlphaPixelFormat_;
-			info = kCGImageAlphaPremultipliedLast;
-		}
-		else
-		{
-			info = kCGImageAlphaNoneSkipLast;
+		pixelFormat = defaultAlphaPixelFormat_;
+		info = kCGImageAlphaPremultipliedLast;
 
-			if( bpp >= 8 )
-				pixelFormat = kCCTexture2DPixelFormat_RGB888;
-			else
-				pixelFormat = kCCTexture2DPixelFormat_RGB565;
-			
-			CCLOG(@"cocos2d: CCTexture2D: Using %@ texture since image has no alpha", (bpp>=8) ? @"RGB888" : @"RGB565" );
-				
-		}
+//		if( hasAlpha ) {
+//			pixelFormat = defaultAlphaPixelFormat_;
+//			info = kCGImageAlphaPremultipliedLast;
+//		}
+//		else
+//		{
+//			info = kCGImageAlphaNoneSkipLast;
+//
+//			if( bpp >= 8 )
+//				pixelFormat = kCCTexture2DPixelFormat_RGB888;
+//			else
+//				pixelFormat = kCCTexture2DPixelFormat_RGB565;
+//			
+//			CCLOG(@"cocos2d: CCTexture2D: Using %@ texture since image has no alpha", (bpp>=8) ? @"RGB888" : @"RGB565" );
+//				
+//		}
 	} else {
 		// NOTE: No colorspace means a mask image
 		CCLOG(@"cocos2d: CCTexture2D: Using A8 texture since image is a mask");
@@ -299,7 +308,9 @@ static CCTexture2DPixelFormat defaultAlphaPixelFormat_ = kCCTexture2DPixelFormat
 		case kCCTexture2DPixelFormat_RGB5A1:
 		case kCCTexture2DPixelFormat_RGB565:
 		case kCCTexture2DPixelFormat_RGB888:
-			colorSpace = CGColorSpaceCreateDeviceRGB();
+			colorSpace = CGColorSpaceCreateDeviceRGB();	
+			int malloc_size = POTHigh * POTWide * 4;
+			NSLog(@"Additional malloc: %d", malloc_size);
 			data = malloc(POTHigh * POTWide * 4);
 //			info = hasAlpha ? kCGImageAlphaPremultipliedLast : kCGImageAlphaNoneSkipLast;
 //			info = kCGImageAlphaPremultipliedLast;  // issue #886. This patch breaks BMP images.
@@ -676,7 +687,8 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
 
 			[pvr release];
 
-			[self setAntiAliasTexParameters];
+
+//			[self setAntiAliasTexParameters];
 		} else {
 
 			CCLOG(@"cocos2d: Couldn't load PVR image: %@", relPath);
@@ -780,15 +792,15 @@ static BOOL PVRHaveAlphaPremultiplied_ = NO;
 
 -(void) setTexParameters: (ccTexParams*) texParams
 {
-	NSAssert( (width_ == ccNextPOT(width_) && height_ == ccNextPOT(height_)) ||
-			 (texParams->wrapS == GL_CLAMP_TO_EDGE && texParams->wrapT == GL_CLAMP_TO_EDGE),
-			 @"GL_CLAMP_TO_EDGE should be used in NPOT textures");
-
-	ccGLBindTexture2D( name_ );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texParams->minFilter );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texParams->magFilter );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texParams->wrapS );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texParams->wrapT );
+//	NSAssert( (width_ == ccNextPOT(width_) && height_ == ccNextPOT(height_)) ||
+//			 (texParams->wrapS == GL_CLAMP_TO_EDGE && texParams->wrapT == GL_CLAMP_TO_EDGE),
+//			 @"GL_CLAMP_TO_EDGE should be used in NPOT textures");
+//
+//	ccGLBindTexture2D( name_ );
+//	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texParams->minFilter );
+//	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texParams->magFilter );
+//	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texParams->wrapS );
+//	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texParams->wrapT );
 }
 
 -(void) setAliasTexParameters
