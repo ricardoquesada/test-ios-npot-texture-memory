@@ -59,6 +59,8 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 
 #import <zlib.h>
 
+#import <GLKit/GLKTextureLoader.h>
+
 #import "CCTexturePVR.h"
 #import "ccMacros.h"
 #import "CCConfiguration.h"
@@ -347,41 +349,50 @@ typedef struct _PVRTexHeader
 {
 	if((self = [super init]))
 	{
-		unsigned char *pvrdata = NULL;
-		NSInteger pvrlen = 0;
-		NSString *lowerCase = [path lowercaseString];
-
-        if ( [lowerCase hasSuffix:@".ccz"])
-			pvrlen = ccInflateCCZFile( [path UTF8String], &pvrdata );
-
-		else if( [lowerCase hasSuffix:@".gz"] )
-			pvrlen = ccInflateGZipFile( [path UTF8String], &pvrdata );
-
-		else
-			pvrlen = ccLoadFileIntoMemory( [path UTF8String], &pvrdata );
-
-		if( pvrlen < 0 ) {
-			[self release];
-			return nil;
-		}
-
-
-        numberOfMipmaps_ = 0;
-
-		name_ = 0;
-		width_ = height_ = 0;
-		tableFormatIndex_ = -1;
-		hasAlpha_ = FALSE;
-
-		retainName_ = NO; // cocos2d integration
-
-		if( ! [self unpackPVRData:pvrdata PVRLen:pvrlen] || ![self createGLTexture]  ) {
-			free(pvrdata);
-			[self release];
-			return nil;
-		}
-
-		free(pvrdata);
+//		unsigned char *pvrdata = NULL;
+//		NSInteger pvrlen = 0;
+//		NSString *lowerCase = [path lowercaseString];
+//
+//        if ( [lowerCase hasSuffix:@".ccz"])
+//			pvrlen = ccInflateCCZFile( [path UTF8String], &pvrdata );
+//
+//		else if( [lowerCase hasSuffix:@".gz"] )
+//			pvrlen = ccInflateGZipFile( [path UTF8String], &pvrdata );
+//
+//		else
+//			pvrlen = ccLoadFileIntoMemory( [path UTF8String], &pvrdata );
+//
+//		if( pvrlen < 0 ) {
+//			[self release];
+//			return nil;
+//		}
+//
+//
+//        numberOfMipmaps_ = 0;
+//
+//		name_ = 0;
+//		width_ = height_ = 0;
+//		tableFormatIndex_ = -1;
+//		hasAlpha_ = FALSE;
+//
+//		retainName_ = NO; // cocos2d integration
+//
+//		if( ! [self unpackPVRData:pvrdata PVRLen:pvrlen] || ![self createGLTexture]  ) {
+//			free(pvrdata);
+//			[self release];
+//			return nil;
+//		}
+//
+//		free(pvrdata);
+		
+		GLKTextureInfo *textureInfo = [GLKTextureLoader textureWithContentsOfFile:path options:nil error:nil];
+		
+		retainName_ = NO;
+		name_ = textureInfo.name;
+		width_ = textureInfo.width;
+		height_ = textureInfo.height;
+		hasAlpha_ = ! ( textureInfo.alphaState == GLKTextureInfoAlphaStateNone );
+		numberOfMipmaps_ = 1;
 	}
 
 	return self;

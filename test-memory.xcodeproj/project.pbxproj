@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A014DDB715339BBF00BAA79E /* texture1025x1025_rgba8888.png in Resources */ = {isa = PBXBuildFile; fileRef = A014DDB515339BBF00BAA79E /* texture1025x1025_rgba8888.png */; };
 		A014DDB815339BBF00BAA79E /* texture2047x2047_rgba8888.png in Resources */ = {isa = PBXBuildFile; fileRef = A014DDB615339BBF00BAA79E /* texture2047x2047_rgba8888.png */; };
+		A014DDBB1533A8F800BAA79E /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A014DDBA1533A8F800BAA79E /* GLKit.framework */; };
 		A0610B0E153276CE00076220 /* texture1536x1536_rgba8888.png in Resources */ = {isa = PBXBuildFile; fileRef = A0610B0D153276CE00076220 /* texture1536x1536_rgba8888.png */; };
 		A0BA3962152C6CCD0071F391 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0BA3961152C6CCD0071F391 /* QuartzCore.framework */; };
 		A0BA3964152C6CCD0071F391 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0BA3963152C6CCD0071F391 /* OpenGLES.framework */; };
@@ -141,6 +142,7 @@
 /* Begin PBXFileReference section */
 		A014DDB515339BBF00BAA79E /* texture1025x1025_rgba8888.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = texture1025x1025_rgba8888.png; path = Resources/texture1025x1025_rgba8888.png; sourceTree = "<group>"; };
 		A014DDB615339BBF00BAA79E /* texture2047x2047_rgba8888.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = texture2047x2047_rgba8888.png; path = Resources/texture2047x2047_rgba8888.png; sourceTree = "<group>"; };
+		A014DDBA1533A8F800BAA79E /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		A0610B0D153276CE00076220 /* texture1536x1536_rgba8888.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = texture1536x1536_rgba8888.png; path = Resources/texture1536x1536_rgba8888.png; sourceTree = "<group>"; };
 		A0BA395D152C6CCD0071F391 /* test-memory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "test-memory.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0BA3961152C6CCD0071F391 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -409,6 +411,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A014DDBB1533A8F800BAA79E /* GLKit.framework in Frameworks */,
 				A0BA3962152C6CCD0071F391 /* QuartzCore.framework in Frameworks */,
 				A0BA3964152C6CCD0071F391 /* OpenGLES.framework in Frameworks */,
 				A0BA3966152C6CCD0071F391 /* OpenAL.framework in Frameworks */,
@@ -427,6 +430,7 @@
 		A0BA3952152C6CCD0071F391 = {
 			isa = PBXGroup;
 			children = (
+				A014DDBA1533A8F800BAA79E /* GLKit.framework */,
 				A0BA3973152C6CCD0071F391 /* test-memory */,
 				A0BA3960152C6CCD0071F391 /* Frameworks */,
 				A0BA395E152C6CCD0071F391 /* Products */,
