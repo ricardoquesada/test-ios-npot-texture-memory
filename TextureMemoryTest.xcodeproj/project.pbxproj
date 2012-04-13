@@ -1,0 +1,522 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A02375FA15364E2C00AEA51E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A02375F915364E2C00AEA51E /* UIKit.framework */; };
+		A02375FC15364E2C00AEA51E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A02375FB15364E2C00AEA51E /* Foundation.framework */; };
+		A02375FE15364E2C00AEA51E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A02375FD15364E2C00AEA51E /* CoreGraphics.framework */; };
+		A023760015364E2C00AEA51E /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A02375FF15364E2C00AEA51E /* GLKit.framework */; };
+		A023760215364E2C00AEA51E /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A023760115364E2C00AEA51E /* OpenGLES.framework */; };
+		A023760815364E2C00AEA51E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A023760615364E2C00AEA51E /* InfoPlist.strings */; };
+		A023760A15364E2C00AEA51E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A023760915364E2C00AEA51E /* main.m */; };
+		A023760E15364E2C00AEA51E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A023760D15364E2C00AEA51E /* AppDelegate.m */; };
+		A023761015364E2C00AEA51E /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = A023760F15364E2C00AEA51E /* Shader.fsh */; };
+		A023761215364E2C00AEA51E /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = A023761115364E2C00AEA51E /* Shader.vsh */; };
+		A023761515364E2C00AEA51E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A023761415364E2C00AEA51E /* ViewController.m */; };
+		A023761815364E2C00AEA51E /* ViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = A023761615364E2C00AEA51E /* ViewController_iPhone.xib */; };
+		A023761B15364E2C00AEA51E /* ViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A023761915364E2C00AEA51E /* ViewController_iPad.xib */; };
+		A023762315364E2C00AEA51E /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A023762215364E2C00AEA51E /* SenTestingKit.framework */; };
+		A023762415364E2C00AEA51E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A02375F915364E2C00AEA51E /* UIKit.framework */; };
+		A023762515364E2C00AEA51E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A02375FB15364E2C00AEA51E /* Foundation.framework */; };
+		A023762D15364E2C00AEA51E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A023762B15364E2C00AEA51E /* InfoPlist.strings */; };
+		A023763015364E2C00AEA51E /* TextureMemoryTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A023762F15364E2C00AEA51E /* TextureMemoryTestTests.m */; };
+		A023763F15364ED000AEA51E /* test_1023x1023_rgb565.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023763915364ED000AEA51E /* test_1023x1023_rgb565.pvr */; };
+		A023764015364ED000AEA51E /* test_1023x1023_rgb888.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023763A15364ED000AEA51E /* test_1023x1023_rgb888.pvr */; };
+		A023764115364ED000AEA51E /* test_1023x1023_rgba4444.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023763B15364ED000AEA51E /* test_1023x1023_rgba4444.pvr */; };
+		A023764215364ED000AEA51E /* test_1023x1023_rgba5551.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023763C15364ED000AEA51E /* test_1023x1023_rgba5551.pvr */; };
+		A023764315364ED000AEA51E /* test_1023x1023_rgba8888.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023763D15364ED000AEA51E /* test_1023x1023_rgba8888.pvr */; };
+		A023764415364ED000AEA51E /* test_1023x1023.png in Resources */ = {isa = PBXBuildFile; fileRef = A023763E15364ED000AEA51E /* test_1023x1023.png */; };
+		A023764B15364F9000AEA51E /* test_1024x1024_rgb565.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023764515364F9000AEA51E /* test_1024x1024_rgb565.pvr */; };
+		A023764C15364F9000AEA51E /* test_1024x1024_rgb888.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023764615364F9000AEA51E /* test_1024x1024_rgb888.pvr */; };
+		A023764D15364F9000AEA51E /* test_1024x1024_rgba4444.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023764715364F9000AEA51E /* test_1024x1024_rgba4444.pvr */; };
+		A023764E15364F9000AEA51E /* test_1024x1024_rgba5551.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023764815364F9000AEA51E /* test_1024x1024_rgba5551.pvr */; };
+		A023764F15364F9000AEA51E /* test_1024x1024_rgba8888.pvr in Resources */ = {isa = PBXBuildFile; fileRef = A023764915364F9000AEA51E /* test_1024x1024_rgba8888.pvr */; };
+		A023765015364F9000AEA51E /* test_1024x1024.png in Resources */ = {isa = PBXBuildFile; fileRef = A023764A15364F9000AEA51E /* test_1024x1024.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A023762615364E2C00AEA51E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A02375EC15364E2B00AEA51E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A02375F415364E2C00AEA51E;
+			remoteInfo = TextureMemoryTest;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A02375F515364E2C00AEA51E /* TextureMemoryTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TextureMemoryTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A02375F915364E2C00AEA51E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A02375FB15364E2C00AEA51E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A02375FD15364E2C00AEA51E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A02375FF15364E2C00AEA51E /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		A023760115364E2C00AEA51E /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		A023760515364E2C00AEA51E /* TextureMemoryTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TextureMemoryTest-Info.plist"; sourceTree = "<group>"; };
+		A023760715364E2C00AEA51E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A023760915364E2C00AEA51E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A023760B15364E2C00AEA51E /* TextureMemoryTest-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TextureMemoryTest-Prefix.pch"; sourceTree = "<group>"; };
+		A023760C15364E2C00AEA51E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		A023760D15364E2C00AEA51E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		A023760F15364E2C00AEA51E /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
+		A023761115364E2C00AEA51E /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
+		A023761315364E2C00AEA51E /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		A023761415364E2C00AEA51E /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		A023761715364E2C00AEA51E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPhone.xib; sourceTree = "<group>"; };
+		A023761A15364E2C00AEA51E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
+		A023762115364E2C00AEA51E /* TextureMemoryTestTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TextureMemoryTestTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A023762215364E2C00AEA51E /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		A023762A15364E2C00AEA51E /* TextureMemoryTestTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TextureMemoryTestTests-Info.plist"; sourceTree = "<group>"; };
+		A023762C15364E2C00AEA51E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A023762E15364E2C00AEA51E /* TextureMemoryTestTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextureMemoryTestTests.h; sourceTree = "<group>"; };
+		A023762F15364E2C00AEA51E /* TextureMemoryTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TextureMemoryTestTests.m; sourceTree = "<group>"; };
+		A023763915364ED000AEA51E /* test_1023x1023_rgb565.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1023x1023_rgb565.pvr; sourceTree = "<group>"; };
+		A023763A15364ED000AEA51E /* test_1023x1023_rgb888.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1023x1023_rgb888.pvr; sourceTree = "<group>"; };
+		A023763B15364ED000AEA51E /* test_1023x1023_rgba4444.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1023x1023_rgba4444.pvr; sourceTree = "<group>"; };
+		A023763C15364ED000AEA51E /* test_1023x1023_rgba5551.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1023x1023_rgba5551.pvr; sourceTree = "<group>"; };
+		A023763D15364ED000AEA51E /* test_1023x1023_rgba8888.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1023x1023_rgba8888.pvr; sourceTree = "<group>"; };
+		A023763E15364ED000AEA51E /* test_1023x1023.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_1023x1023.png; sourceTree = "<group>"; };
+		A023764515364F9000AEA51E /* test_1024x1024_rgb565.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1024x1024_rgb565.pvr; sourceTree = "<group>"; };
+		A023764615364F9000AEA51E /* test_1024x1024_rgb888.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1024x1024_rgb888.pvr; sourceTree = "<group>"; };
+		A023764715364F9000AEA51E /* test_1024x1024_rgba4444.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1024x1024_rgba4444.pvr; sourceTree = "<group>"; };
+		A023764815364F9000AEA51E /* test_1024x1024_rgba5551.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1024x1024_rgba5551.pvr; sourceTree = "<group>"; };
+		A023764915364F9000AEA51E /* test_1024x1024_rgba8888.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_1024x1024_rgba8888.pvr; sourceTree = "<group>"; };
+		A023764A15364F9000AEA51E /* test_1024x1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_1024x1024.png; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A02375F215364E2C00AEA51E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A02375FA15364E2C00AEA51E /* UIKit.framework in Frameworks */,
+				A02375FC15364E2C00AEA51E /* Foundation.framework in Frameworks */,
+				A02375FE15364E2C00AEA51E /* CoreGraphics.framework in Frameworks */,
+				A023760015364E2C00AEA51E /* GLKit.framework in Frameworks */,
+				A023760215364E2C00AEA51E /* OpenGLES.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A023761D15364E2C00AEA51E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A023762315364E2C00AEA51E /* SenTestingKit.framework in Frameworks */,
+				A023762415364E2C00AEA51E /* UIKit.framework in Frameworks */,
+				A023762515364E2C00AEA51E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A02375EA15364E2B00AEA51E = {
+			isa = PBXGroup;
+			children = (
+				A023760315364E2C00AEA51E /* TextureMemoryTest */,
+				A023762815364E2C00AEA51E /* TextureMemoryTestTests */,
+				A02375F815364E2C00AEA51E /* Frameworks */,
+				A02375F615364E2C00AEA51E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A02375F615364E2C00AEA51E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A02375F515364E2C00AEA51E /* TextureMemoryTest.app */,
+				A023762115364E2C00AEA51E /* TextureMemoryTestTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A02375F815364E2C00AEA51E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A02375F915364E2C00AEA51E /* UIKit.framework */,
+				A02375FB15364E2C00AEA51E /* Foundation.framework */,
+				A02375FD15364E2C00AEA51E /* CoreGraphics.framework */,
+				A02375FF15364E2C00AEA51E /* GLKit.framework */,
+				A023760115364E2C00AEA51E /* OpenGLES.framework */,
+				A023762215364E2C00AEA51E /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A023760315364E2C00AEA51E /* TextureMemoryTest */ = {
+			isa = PBXGroup;
+			children = (
+				A023764515364F9000AEA51E /* test_1024x1024_rgb565.pvr */,
+				A023764615364F9000AEA51E /* test_1024x1024_rgb888.pvr */,
+				A023764715364F9000AEA51E /* test_1024x1024_rgba4444.pvr */,
+				A023764815364F9000AEA51E /* test_1024x1024_rgba5551.pvr */,
+				A023764915364F9000AEA51E /* test_1024x1024_rgba8888.pvr */,
+				A023764A15364F9000AEA51E /* test_1024x1024.png */,
+				A023763915364ED000AEA51E /* test_1023x1023_rgb565.pvr */,
+				A023763A15364ED000AEA51E /* test_1023x1023_rgb888.pvr */,
+				A023763B15364ED000AEA51E /* test_1023x1023_rgba4444.pvr */,
+				A023763C15364ED000AEA51E /* test_1023x1023_rgba5551.pvr */,
+				A023763D15364ED000AEA51E /* test_1023x1023_rgba8888.pvr */,
+				A023763E15364ED000AEA51E /* test_1023x1023.png */,
+				A023760C15364E2C00AEA51E /* AppDelegate.h */,
+				A023760D15364E2C00AEA51E /* AppDelegate.m */,
+				A023760F15364E2C00AEA51E /* Shader.fsh */,
+				A023761115364E2C00AEA51E /* Shader.vsh */,
+				A023761315364E2C00AEA51E /* ViewController.h */,
+				A023761415364E2C00AEA51E /* ViewController.m */,
+				A023761615364E2C00AEA51E /* ViewController_iPhone.xib */,
+				A023761915364E2C00AEA51E /* ViewController_iPad.xib */,
+				A023760415364E2C00AEA51E /* Supporting Files */,
+			);
+			path = TextureMemoryTest;
+			sourceTree = "<group>";
+		};
+		A023760415364E2C00AEA51E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A023760515364E2C00AEA51E /* TextureMemoryTest-Info.plist */,
+				A023760615364E2C00AEA51E /* InfoPlist.strings */,
+				A023760915364E2C00AEA51E /* main.m */,
+				A023760B15364E2C00AEA51E /* TextureMemoryTest-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A023762815364E2C00AEA51E /* TextureMemoryTestTests */ = {
+			isa = PBXGroup;
+			children = (
+				A023762E15364E2C00AEA51E /* TextureMemoryTestTests.h */,
+				A023762F15364E2C00AEA51E /* TextureMemoryTestTests.m */,
+				A023762915364E2C00AEA51E /* Supporting Files */,
+			);
+			path = TextureMemoryTestTests;
+			sourceTree = "<group>";
+		};
+		A023762915364E2C00AEA51E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A023762A15364E2C00AEA51E /* TextureMemoryTestTests-Info.plist */,
+				A023762B15364E2C00AEA51E /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A02375F415364E2C00AEA51E /* TextureMemoryTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A023763315364E2C00AEA51E /* Build configuration list for PBXNativeTarget "TextureMemoryTest" */;
+			buildPhases = (
+				A02375F115364E2C00AEA51E /* Sources */,
+				A02375F215364E2C00AEA51E /* Frameworks */,
+				A02375F315364E2C00AEA51E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TextureMemoryTest;
+			productName = TextureMemoryTest;
+			productReference = A02375F515364E2C00AEA51E /* TextureMemoryTest.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A023762015364E2C00AEA51E /* TextureMemoryTestTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A023763615364E2C00AEA51E /* Build configuration list for PBXNativeTarget "TextureMemoryTestTests" */;
+			buildPhases = (
+				A023761C15364E2C00AEA51E /* Sources */,
+				A023761D15364E2C00AEA51E /* Frameworks */,
+				A023761E15364E2C00AEA51E /* Resources */,
+				A023761F15364E2C00AEA51E /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A023762715364E2C00AEA51E /* PBXTargetDependency */,
+			);
+			name = TextureMemoryTestTests;
+			productName = TextureMemoryTestTests;
+			productReference = A023762115364E2C00AEA51E /* TextureMemoryTestTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A02375EC15364E2B00AEA51E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = A02375EF15364E2B00AEA51E /* Build configuration list for PBXProject "TextureMemoryTest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A02375EA15364E2B00AEA51E;
+			productRefGroup = A02375F615364E2C00AEA51E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A02375F415364E2C00AEA51E /* TextureMemoryTest */,
+				A023762015364E2C00AEA51E /* TextureMemoryTestTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A02375F315364E2C00AEA51E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A023760815364E2C00AEA51E /* InfoPlist.strings in Resources */,
+				A023761015364E2C00AEA51E /* Shader.fsh in Resources */,
+				A023761215364E2C00AEA51E /* Shader.vsh in Resources */,
+				A023761815364E2C00AEA51E /* ViewController_iPhone.xib in Resources */,
+				A023761B15364E2C00AEA51E /* ViewController_iPad.xib in Resources */,
+				A023763F15364ED000AEA51E /* test_1023x1023_rgb565.pvr in Resources */,
+				A023764015364ED000AEA51E /* test_1023x1023_rgb888.pvr in Resources */,
+				A023764115364ED000AEA51E /* test_1023x1023_rgba4444.pvr in Resources */,
+				A023764215364ED000AEA51E /* test_1023x1023_rgba5551.pvr in Resources */,
+				A023764315364ED000AEA51E /* test_1023x1023_rgba8888.pvr in Resources */,
+				A023764415364ED000AEA51E /* test_1023x1023.png in Resources */,
+				A023764B15364F9000AEA51E /* test_1024x1024_rgb565.pvr in Resources */,
+				A023764C15364F9000AEA51E /* test_1024x1024_rgb888.pvr in Resources */,
+				A023764D15364F9000AEA51E /* test_1024x1024_rgba4444.pvr in Resources */,
+				A023764E15364F9000AEA51E /* test_1024x1024_rgba5551.pvr in Resources */,
+				A023764F15364F9000AEA51E /* test_1024x1024_rgba8888.pvr in Resources */,
+				A023765015364F9000AEA51E /* test_1024x1024.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A023761E15364E2C00AEA51E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A023762D15364E2C00AEA51E /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A023761F15364E2C00AEA51E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A02375F115364E2C00AEA51E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A023760A15364E2C00AEA51E /* main.m in Sources */,
+				A023760E15364E2C00AEA51E /* AppDelegate.m in Sources */,
+				A023761515364E2C00AEA51E /* ViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A023761C15364E2C00AEA51E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A023763015364E2C00AEA51E /* TextureMemoryTestTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A023762715364E2C00AEA51E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A02375F415364E2C00AEA51E /* TextureMemoryTest */;
+			targetProxy = A023762615364E2C00AEA51E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		A023760615364E2C00AEA51E /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A023760715364E2C00AEA51E /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A023761615364E2C00AEA51E /* ViewController_iPhone.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A023761715364E2C00AEA51E /* en */,
+			);
+			name = ViewController_iPhone.xib;
+			sourceTree = "<group>";
+		};
+		A023761915364E2C00AEA51E /* ViewController_iPad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A023761A15364E2C00AEA51E /* en */,
+			);
+			name = ViewController_iPad.xib;
+			sourceTree = "<group>";
+		};
+		A023762B15364E2C00AEA51E /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A023762C15364E2C00AEA51E /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A023763115364E2C00AEA51E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A023763215364E2C00AEA51E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A023763415364E2C00AEA51E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TextureMemoryTest/TextureMemoryTest-Prefix.pch";
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				INFOPLIST_FILE = "TextureMemoryTest/TextureMemoryTest-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A023763515364E2C00AEA51E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TextureMemoryTest/TextureMemoryTest-Prefix.pch";
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				INFOPLIST_FILE = "TextureMemoryTest/TextureMemoryTest-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		A023763715364E2C00AEA51E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/TextureMemoryTest.app/TextureMemoryTest";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TextureMemoryTest/TextureMemoryTest-Prefix.pch";
+				INFOPLIST_FILE = "TextureMemoryTestTests/TextureMemoryTestTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		A023763815364E2C00AEA51E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/TextureMemoryTest.app/TextureMemoryTest";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TextureMemoryTest/TextureMemoryTest-Prefix.pch";
+				INFOPLIST_FILE = "TextureMemoryTestTests/TextureMemoryTestTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A02375EF15364E2B00AEA51E /* Build configuration list for PBXProject "TextureMemoryTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A023763115364E2C00AEA51E /* Debug */,
+				A023763215364E2C00AEA51E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A023763315364E2C00AEA51E /* Build configuration list for PBXNativeTarget "TextureMemoryTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A023763415364E2C00AEA51E /* Debug */,
+				A023763515364E2C00AEA51E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		A023763615364E2C00AEA51E /* Build configuration list for PBXNativeTarget "TextureMemoryTestTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A023763715364E2C00AEA51E /* Debug */,
+				A023763815364E2C00AEA51E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A02375EC15364E2B00AEA51E /* Project object */;
+}
